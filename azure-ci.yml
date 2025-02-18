@@ -27,8 +27,8 @@ steps:
 - task: Docker@2
   inputs:
     command: 'login'
-    containerRegistry: 'DockerHubServiceConnection'
     dockerRegistryEndpoint: 'DockerHubServiceConnection'
+    containerRegistry: 'DockerHubServiceConnection'
   displayName: 'Log in to Docker Hub'
 
 - task: Docker@2
