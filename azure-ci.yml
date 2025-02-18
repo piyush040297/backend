@@ -5,7 +5,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- task: GitHubCheckout@2
+- task: Checkout@1
   displayName: 'Checkout code'
 
 - task: JavaToolInstaller@1
@@ -28,7 +28,7 @@ steps:
   inputs:
     command: 'login'
     containerRegistry: 'DockerHub'
-    dockerRegistryEndpoint: 'DockerHubCredentials'
+    dockerRegistryEndpoint: 'DockerHubServiceConnection'
   displayName: 'Log in to Docker Hub'
 
 - task: Docker@2
