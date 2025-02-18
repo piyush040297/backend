@@ -26,9 +26,10 @@ steps:
 
 - task: Docker@2
   inputs:
-    command: 'buildAndPush'
+    containerRegistry: 'DockerHubServiceConnection'
     repository: 'sharmapiyush0402/demo'
-    dockerfile: 'Dockerfile'  # Adjust this if your Dockerfile is in a different location
+    command: 'buildAndPush'
+    Dockerfile: '**/Dockerfile'
     tags: |
       latest
       $(Build.BuildId)
