@@ -8,11 +8,11 @@ steps:
 - task: Checkout@1
   displayName: 'Checkout code'
 
-- task: JavaToolInstaller@1
+- task: JavaToolInstaller@0
   inputs:
     versionSpec: '11'
     jdkArchitectureOption: 'x64'
-    jdkSourceOption: 'PreInstalled'
+  displayName: 'Set up JDK 11'
 
 - script: mvn clean package
   displayName: 'Build with Maven'
