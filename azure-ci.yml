@@ -33,4 +33,5 @@ steps:
     tags: |
       latest
       $(Build.BuildId)
+    timeoutInMinutes: 20  
   displayName: 'Build and push Docker image'
