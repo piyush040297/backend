@@ -44,6 +44,7 @@ This web application displays lists of board games and their reviews. While anyo
 
 ## How to Run
 
+
 1. Clone the repository
 2. Open the project in your IDE of choice
 3. Run the application
