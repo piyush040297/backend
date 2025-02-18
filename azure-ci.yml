@@ -1,36 +1,41 @@
-name: Build and Push to Docker Hub
+trigger:
+- main
 
-on:
-  push:
-    branches:
-      - main
+pool:
+  vmImage: 'ubuntu-latest'
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+steps:
+- task: GitHubCheckout@2
+  displayName: 'Checkout code'
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+- task: UseJavaVersion@1
+  inputs:
+    versionSpec: '11'
+    jdkArchitecture: 'x64'
+  displayName: 'Set up JDK 11'
 
-    - name: Set up JDK 11
-      uses: actions/setup-java@v2
-      with:
-        java-version: '11'
+- script: mvn clean package
+  displayName: 'Build with Maven'
 
-    - name: Build with Maven
-      run: mvn clean package
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
+      echo "Using DockerHubCredentials library"
+  displayName: 'Use DockerHubCredentials library'
 
-    - name: Use DockerHubCredentials library
-      run: echo "Using DockerHubCredentials library"
+- task: Docker@2
+  inputs:
+    command: 'login'
+    containerRegistry: 'DockerHub'
+    dockerRegistryEndpoint: 'DockerHubCredentials'
+  displayName: 'Log in to Docker Hub'
 
-    - name: Log in to Docker Hub
-      uses: docker/login-action@v1
-      with:
-        username: ${{ secrets.DockerHubCredentials.DOCKER_USERNAME }}
-        password: ${{ secrets.DockerHubCredentials.DOCKER_PASSWORD }}
-
-    - name: Build and push Docker image
-      run: |
-        docker build -t sharmapiyush0402/demo:${{ github.sha }} .
-        docker push sharmapiyush0402/demo:${{ github.sha }}
+- task: Docker@2
+  inputs:
+    command: 'buildAndPush'
+    repository: 'sharmapiyush0402/demo'
+    dockerfile: '**/Dockerfile'
+    tags: |
+      $(Build.SourceBranchName)
+  displayName: 'Build and push Docker image'
