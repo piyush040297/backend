@@ -27,7 +27,7 @@ steps:
 - task: Docker@2
   inputs:
     command: 'login'
-    containerRegistry: 'DockerHub'
+    containerRegistry: 'DockerHubServiceConnection'
     dockerRegistryEndpoint: 'DockerHubServiceConnection'
   displayName: 'Log in to Docker Hub'
 
@@ -38,4 +38,4 @@ steps:
     dockerfile: '**/Dockerfile'
     tags: |
       $(Build.SourceBranchName)
-  displayName: 'Build and push Docker image'
+  displayName: 'Build and push Docker image' 
