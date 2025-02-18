@@ -5,7 +5,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- task: Checkout@1
+- checkout: self
   displayName: 'Checkout code'
 
 - task: JavaToolInstaller@0
@@ -20,15 +20,15 @@ steps:
 - task: Docker@2
   inputs:
     command: 'login'
-    containerRegistry: 'DockerHubServiceConnection'
+    containerRegistry: 'DockerHubServiceConnection'  # Ensure this is the correct service connection name
   displayName: 'Log in to Docker Hub'
 
 - task: Docker@2
   inputs:
     command: 'buildAndPush'
     repository: 'sharmapiyush0402/demo'
-    dockerfile: '**/Dockerfile'
+    dockerfile: 'Dockerfile'  # Adjust this if your Dockerfile is in a different location
     tags: |
-      - latest
-      - $(Build.BuildId)
+      latest
+      $(Build.BuildId)
   displayName: 'Build and push Docker image'
