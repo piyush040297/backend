@@ -17,17 +17,9 @@ steps:
 - script: mvn clean package
   displayName: 'Build with Maven'
 
-- task: Bash@3
-  inputs:
-    targetType: 'inline'
-    script: |
-      echo "Using DockerHubCredentials library"
-  displayName: 'Use DockerHubCredentials library'
-
 - task: Docker@2
   inputs:
     command: 'login'
-    dockerRegistryEndpoint: 'DockerHubServiceConnection'
     containerRegistry: 'DockerHubServiceConnection'
   displayName: 'Log in to Docker Hub'
 
