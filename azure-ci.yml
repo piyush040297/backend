@@ -12,7 +12,7 @@ steps:
   inputs:
     versionSpec: '11'
     jdkArchitectureOption: 'x64'
-    jdkSourceOption: 'JdkFromVersion'  # Specify the source option
+    jdkSourceOption: 'PreInstalled'  # Use 'PreInstalled' for the source option
   displayName: 'Set up JDK 11'
 
 - script: mvn clean package
