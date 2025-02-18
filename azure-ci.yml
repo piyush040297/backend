@@ -31,4 +31,4 @@ steps:
     tags: |
       - latest
       - $(Build.BuildId)
-  displayName: 'Build and push Docker image' 
+  displayName: 'Build and push Docker image'
