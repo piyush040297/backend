@@ -37,5 +37,6 @@ steps:
     repository: 'sharmapiyush0402/demo'
     dockerfile: '**/Dockerfile'
     tags: |
-      $(Build.SourceBranchName)
+      - latest
+      - $(Build.BuildId)
   displayName: 'Build and push Docker image' 
