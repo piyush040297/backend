@@ -41,16 +41,16 @@ steps:
 - script: |
     # Check if the repository exists
     repoExists=$(curl -s -o /dev/null -w "%{http_code}" \
-    -H "Authorization: Bearer $(DOCKER_HUB_ACCESS_TOKEN)" \
-    "https://hub.docker.com/v2/repositories/$(DOCKER_HUB_USERNAME)/$(sanitizedRepoName)/$(sanitizedBranchName)/")
+    -H "Authorization: Bearer $DOCKER_HUB_ACCESS_TOKEN" \
+    "https://hub.docker.com/v2/repositories/$DOCKER_HUB_USERNAME/$sanitizedRepoName/$sanitizedBranchName/")
     
     if [ "$repoExists" -ne 200 ]; then
       # Create the repository if it doesn't exist
       curl -X POST "https://hub.docker.com/v2/repositories/" \
       -H "Content-Type: application/json" \
-      -H "Authorization: Bearer $(DOCKER_HUB_ACCESS_TOKEN)" \
+      -H "Authorization: Bearer $DOCKER_HUB_ACCESS_TOKEN" \
       -d '{
-            "name": "$(sanitizedRepoName)/$(sanitizedBranchName)",
+            "name": "'$sanitizedRepoName'/'$sanitizedBranchName'",
             "is_private": false
           }'
     fi
@@ -68,7 +68,7 @@ steps:
 - task: Docker@2
   inputs:
     command: 'buildAndPush'
-    repository: '$(DOCKER_HUB_USERNAME)/$(sanitizedRepoName)/$(sanitizedBranchName)'
+    repository: '$(dockerHubUsername)/$(sanitizedRepoName)/$(sanitizedBranchName)'
     dockerfile: 'Dockerfile'  # Adjust this if your Dockerfile is in a different location
     tags: |
       1.0.$(Build.BuildId)
