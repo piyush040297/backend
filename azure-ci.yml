@@ -18,6 +18,13 @@ steps:
 - script: mvn clean package
   displayName: 'Build with Maven'
 
+- script: |
+    REPO_NAME=$(echo $(Build.Repository.Name) | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9' '-')
+    BRANCH_NAME=$(echo $(Build.SourceBranchName) | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9' '-')
+    echo "##vso[task.setvariable variable=SANITIZED_REPO_NAME]$REPO_NAME"
+    echo "##vso[task.setvariable variable=SANITIZED_BRANCH_NAME]$BRANCH_NAME"
+  displayName: 'Sanitize repository and branch names'
+
 - task: Docker@2
   inputs:
     command: 'login'
@@ -30,5 +37,5 @@ steps:
     repository: 'sharmapiyush0402/demo'
     dockerfile: 'Dockerfile'  # Adjust this if your Dockerfile is in a different location
     tags: |
-      $(Build.Repository.Name):$(Build.SourceBranchName):1.0.$(Build.BuildId)
+      $(SANITIZED_REPO_NAME):$(SANITIZED_BRANCH_NAME)-1.0.$(Build.BuildId)
   displayName: 'Build and push Docker image'
