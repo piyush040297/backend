@@ -19,11 +19,12 @@ steps:
   displayName: 'Build with Maven'
 
 - script: |
-    REPO_NAME=$(echo $(Build.Repository.Name) | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9' '-')
-    BRANCH_NAME=$(echo $(Build.SourceBranchName) | tr '[:upper:]' '[:lower:]' | tr -c 'a-z0-9' '-')
-    echo "##vso[task.setvariable variable=SANITIZED_REPO_NAME]$REPO_NAME"
-    echo "##vso[task.setvariable variable=SANITIZED_BRANCH_NAME]$BRANCH_NAME"
-  displayName: 'Sanitize repository and branch names'
+    # Convert repository and branch names to lowercase and replace invalid characters
+    sanitizedRepoName=$(echo "$(Build.Repository.Name)" | tr '[:upper:]' '[:lower:]' | tr -c '[:alnum:]' '-')
+    sanitizedBranchName=$(echo "$(Build.SourceBranchName)" | tr '[:upper:]' '[:lower:]' | tr -c '[:alnum:]' '-')
+    echo "##vso[task.setvariable variable=sanitizedRepoName]$sanitizedRepoName"
+    echo "##vso[task.setvariable variable=sanitizedBranchName]$sanitizedBranchName"
+  displayName: 'Sanitize Repository and Branch Names'
 
 - task: Docker@2
   inputs:
@@ -37,5 +38,5 @@ steps:
     repository: 'sharmapiyush0402/demo'
     dockerfile: 'Dockerfile'  # Adjust this if your Dockerfile is in a different location
     tags: |
-      $(SANITIZED_REPO_NAME):$(SANITIZED_BRANCH_NAME)-1.0.$(Build.BuildId)
+      $(sanitizedRepoName):$(sanitizedBranchName)-1.0.$(Build.BuildId)
   displayName: 'Build and push Docker image'
