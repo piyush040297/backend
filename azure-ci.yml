@@ -4,6 +4,9 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+variables:
+- group: DockerHubCredentials
+
 steps:
 - checkout: self
   displayName: 'Checkout code'
@@ -17,9 +20,9 @@ steps:
 
 - script: mvn clean package
   displayName: 'Build with Maven'
-  
+
 - script: mvn test
-  displayName: 'Execute Test Cases'  
+  displayName: 'Execute Test Cases'
 
 - script: |
     # Convert repository and branch names to lowercase and replace invalid characters
@@ -35,6 +38,27 @@ steps:
     echo "##vso[task.setvariable variable=sanitizedBranchName]$sanitizedBranchName"
   displayName: 'Sanitize Repository and Branch Names'
 
+- script: |
+    # Check if the repository exists
+    repoExists=$(curl -s -o /dev/null -w "%{http_code}" \
+    -H "Authorization: Bearer $(DOCKER_HUB_ACCESS_TOKEN)" \
+    "https://hub.docker.com/v2/repositories/$(DOCKER_HUB_USERNAME)/$(sanitizedRepoName)/$(sanitizedBranchName)/")
+    
+    if [ "$repoExists" -ne 200 ]; then
+      # Create the repository if it doesn't exist
+      curl -X POST "https://hub.docker.com/v2/repositories/" \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer $(DOCKER_HUB_ACCESS_TOKEN)" \
+      -d '{
+            "name": "$(sanitizedRepoName)/$(sanitizedBranchName)",
+            "is_private": false
+          }'
+    fi
+  displayName: 'Check and Create Docker Repository'
+  env:
+    DOCKER_HUB_ACCESS_TOKEN: $(dockerHubAccessToken)
+    DOCKER_HUB_USERNAME: $(dockerHubUsername)
+
 - task: Docker@2
   inputs:
     command: 'login'
@@ -44,8 +68,8 @@ steps:
 - task: Docker@2
   inputs:
     command: 'buildAndPush'
-    repository: 'sharmapiyush0402/demo'
+    repository: '$(DOCKER_HUB_USERNAME)/$(sanitizedRepoName)/$(sanitizedBranchName)'
     dockerfile: 'Dockerfile'  # Adjust this if your Dockerfile is in a different location
     tags: |
-      $(sanitizedRepoName)-$(sanitizedBranchName)-1.0.$(Build.BuildId)
+      1.0.$(Build.BuildId)
   displayName: 'Build and push Docker image'
