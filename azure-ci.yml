@@ -26,12 +26,9 @@ steps:
 
 - task: Docker@2
   inputs:
-    containerRegistry: 'DockerHubServiceConnection'
-    repository: 'sharmapiyush0402/demo'
     command: 'buildAndPush'
-    Dockerfile: '**/Dockerfile'
+    repository: 'sharmapiyush0402/demo'
+    dockerfile: 'Dockerfile'  # Adjust this if your Dockerfile is in a different location
     tags: |
-      latest
-      $(Build.BuildId)
-    timeoutInMinutes: 20  
+      v1.0.$(Build.BuildId)
   displayName: 'Build and push Docker image'
