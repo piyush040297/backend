@@ -63,6 +63,8 @@ steps:
   inputs:
     command: 'login'
     containerRegistry: 'DockerHubServiceConnection'  # Ensure this is the correct service connection name
+    username: $(dockerHubUsername)
+    password: $(dockerHubAccessToken)
   displayName: 'Log in to Docker Hub'
 
 - task: Docker@2
