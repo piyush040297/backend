@@ -70,7 +70,7 @@ steps:
 - task: Docker@2
   inputs:
     command: 'buildAndPush'
-    repository: '$(dockerHubUsername)/$(sanitizedRepoName)/$(sanitizedBranchName)'
+    repository: 'sharmapiyush0402/demo'
     dockerfile: 'Dockerfile'  # Adjust this if your Dockerfile is in a different location
     tags: |
       1.0.$(Build.BuildId)
