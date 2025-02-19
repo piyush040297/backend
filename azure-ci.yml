@@ -17,6 +17,9 @@ steps:
 
 - script: mvn clean package
   displayName: 'Build with Maven'
+  
+- script: mvn test
+  displayName: 'Execute Test Cases'  
 
 - script: |
     # Convert repository and branch names to lowercase and replace invalid characters
