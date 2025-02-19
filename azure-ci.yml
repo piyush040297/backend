@@ -32,6 +32,9 @@ steps:
     # Remove leading/trailing hyphens
     sanitizedBranchName=$(echo "$sanitizedBranchName" | sed 's/^-//;s/-$//')
     
+    # Remove any consecutive hyphens
+    sanitizedBranchName=$(echo "$sanitizedBranchName" | sed 's/--/-/g')
+
     echo "##vso[task.setvariable variable=sanitizedRepoName]$sanitizedRepoName"
     echo "##vso[task.setvariable variable=sanitizedBranchName]$sanitizedBranchName"
   displayName: 'Sanitize Repository and Branch Names'
@@ -42,6 +45,6 @@ steps:
     repository: 'sharmapiyush0402/demo'
     dockerfile: 'Dockerfile'
     tags: |
-      $(sanitizedRepoName)-$(sanitizedBranchName)-1.0.$(Build.BuildId)  # Valid tag format
+      $(sanitizedRepoName):$(sanitizedBranchName)-1.0.$(Build.BuildId)  # Valid tag format
       latest
   displayName: 'Build and push Docker image'
