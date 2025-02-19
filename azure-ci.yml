@@ -30,5 +30,5 @@ steps:
     repository: 'sharmapiyush0402/demo'
     dockerfile: 'Dockerfile'  # Adjust this if your Dockerfile is in a different location
     tags: |
-      $(Build.Repository.Name)-$(Build.SourceBranchName)-1.0.$(Build.BuildId)
+      $(Build.Repository.Name):$(Build.SourceBranchName):1.0.$(Build.BuildId)
   displayName: 'Build and push Docker image'
