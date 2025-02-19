@@ -12,31 +12,36 @@ steps:
   inputs:
     versionSpec: '11'
     jdkArchitectureOption: 'x64'
-    jdkSourceOption: 'PreInstalled'  # Use 'PreInstalled' for the source option
+    jdkSourceOption: 'PreInstalled'
   displayName: 'Set up JDK 11'
 
 - script: mvn clean package
   displayName: 'Build with Maven'
 
+- task: Docker@2
+  inputs:
+    command: 'login'
+    containerRegistry: 'DockerHubServiceConnection'
+  displayName: 'Log in to Docker Hub'
+
 - script: |
     # Convert repository and branch names to lowercase and replace invalid characters
     sanitizedRepoName=$(echo "$(Build.Repository.Name)" | tr '[:upper:]' '[:lower:]' | tr -c '[:alnum:]' '-')
     sanitizedBranchName=$(echo "$(Build.SourceBranchName)" | tr '[:upper:]' '[:lower:]' | tr -c '[:alnum:]' '-')
+    
+    # Remove leading/trailing hyphens
+    sanitizedBranchName=$(echo "$sanitizedBranchName" | sed 's/^-//;s/-$//')
+    
     echo "##vso[task.setvariable variable=sanitizedRepoName]$sanitizedRepoName"
     echo "##vso[task.setvariable variable=sanitizedBranchName]$sanitizedBranchName"
   displayName: 'Sanitize Repository and Branch Names'
 
 - task: Docker@2
   inputs:
-    command: 'login'
-    containerRegistry: 'DockerHubServiceConnection'  # Ensure this is the correct service connection name
-  displayName: 'Log in to Docker Hub'
-
-- task: Docker@2
-  inputs:
     command: 'buildAndPush'
     repository: 'sharmapiyush0402/demo'
-    dockerfile: 'Dockerfile'  # Adjust this if your Dockerfile is in a different location
+    dockerfile: 'Dockerfile'
     tags: |
-      $(sanitizedRepoName):$(sanitizedBranchName)-1.0.$(Build.BuildId)
+      $(sanitizedRepoName)-$(sanitizedBranchName)-1.0.$(Build.BuildId)  # Valid tag format
+      latest
   displayName: 'Build and push Docker image'
