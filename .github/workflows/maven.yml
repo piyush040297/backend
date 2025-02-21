@@ -33,7 +33,7 @@ jobs:
           password: ${{ secrets.ACR_PASSWORD }}
 
       - name: Build Docker image
-        run: docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/my-app:${{ github.sha }} .
+        run: docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/my-app:${{ github.ref_name }}-${{ github.run_id }} .
 
       - name: Push Docker image
-        run: docker push ${{ secrets.ACR_LOGIN_SERVER }}/my-app:${{ github.sha }}
+        run: docker push ${{ secrets.ACR_LOGIN_SERVER }}/my-app:${{ github.ref_name }}-${{ github.run_id }}
