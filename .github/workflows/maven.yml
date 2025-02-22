@@ -1,4 +1,4 @@
-name: Build, Test, and Push Docker Image
+name: Build, Test, and Deploy Java App Docker Image
 
 on:
   push:
@@ -25,15 +25,37 @@ jobs:
       - name: Run tests with Maven
         run: mvn test
 
-      - name: Log in to Azure Container Registry
-        uses: azure/docker-login@v1
+      - name: Log in to Azure
+        uses: azure/login@v1
         with:
-          login-server: ${{ secrets.ACR_LOGIN_SERVER }}
-          username: ${{ secrets.ACR_USERNAME }}
-          password: ${{ secrets.ACR_PASSWORD }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - name: Build Docker image
-        run: docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/my-app:${{ github.ref_name }}-${{ github.run_id }} .
-
-      - name: Push Docker image
-        run: docker push ${{ secrets.ACR_LOGIN_SERVER }}/my-app:${{ github.ref_name }}-${{ github.run_id }}
+      - name: Build, push, and deploy container image
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          appSourcePath: ${{ github.workspace }}
+          dockerfilePath: ./Dockerfile
+          registryUrl: ${{ secrets.ACR_LOGIN_SERVER }}
+          registryUsername: ${{ secrets.ACR_USERNAME }}
+          registryPassword: ${{ secrets.ACR_PASSWORD }}
+          containerAppName: backend
+          resourceGroup: POC
+          imageToBuild: ${{ secrets.ACR_LOGIN_SERVER }}/backend:${{ github.ref_name }}-${{ github.run_id }}
+          livenessProbe: |
+            {
+              "httpGet": {
+                "path": "/healthz",
+                "port": 80
+              },
+              "initialDelaySeconds": 30,
+              "periodSeconds": 10
+            }
+          readinessProbe: |
+            {
+              "httpGet": {
+                "path": "/readiness",
+                "port": 80
+              },
+              "initialDelaySeconds": 5,
+              "periodSeconds": 10
+            }
