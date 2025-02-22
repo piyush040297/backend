@@ -43,24 +43,9 @@ jobs:
           imageToBuild: ${{ secrets.ACR_LOGIN_SERVER }}/backend:${{ github.ref_name }}-${{ github.run_id }}
           
       - name: Configure health probes
-        run: |
-          az containerapp update \
-            --name backend \
-            --resource-group POC \
-            --set properties.template.containers[0].livenessProbe='{
-              "httpGet": {
-                "path": "/healthz",
-                "port": 80
-              },
-              "initialDelaySeconds": 30,
-              "periodSeconds": 10
-            }' \
-            --set properties.template.containers[0].readinessProbe='{
-              "httpGet": {
-                "path": "/readiness",
-                "port": 80
-              },
-              "initialDelaySeconds": 5,
-              "periodSeconds": 10
-            }'
+          run: |
+            az containerapp update \
+              --name backend \
+              --resource-group POC \
+              --yaml ./containerapp-config.yaml
             
