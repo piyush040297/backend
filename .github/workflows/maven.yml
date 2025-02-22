@@ -43,9 +43,9 @@ jobs:
           imageToBuild: ${{ secrets.ACR_LOGIN_SERVER }}/backend:${{ github.ref_name }}-${{ github.run_id }}
           
       - name: Configure health probes
-          run: |
-            az containerapp update \
-              --name backend \
-              --resource-group POC \
-              --yaml ./containerapp-config.yaml
+        run: |
+          az containerapp update \
+            --name backend \
+            --resource-group POC \
+            --yaml ./.github/workflows/containerapp-config.yaml
             
